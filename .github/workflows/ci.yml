@@ -39,3 +39,12 @@ jobs:
         uses: ansible/ansible-lint@main
         with:
           path: "ansible_iac/setup_env.yml"
+  compose-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Validate Docker Compose file
+        run: |
+          cd monitoring
+          docker compose config
