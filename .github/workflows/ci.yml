@@ -30,3 +30,12 @@ jobs:
           docker run -d -p 8080:8080 --name test_app my-app:${{ github.sha }}
           sleep 2
           curl --fail http://localhost:8080 || exit 1
+  ansible-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run Ansible Lint
+        uses: ansible/ansible-lint-action@v6
+        with:
+          path: "ansible_iac/setup_env.yml"

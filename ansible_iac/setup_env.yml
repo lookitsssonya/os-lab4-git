@@ -1,0 +1,20 @@
+---
+- name: Автоматическая настройка локального окружения
+  hosts: local
+  become: true
+  tasks:
+    - name: Установка пакета nginx
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+    - name: Создание пользовательской веб-страницы
+      copy:
+        dest: /var/www/html/index.html
+        content: "<h1>Инфраструктура настроена через Ansible (IaC)</h1>\n"
+        mode: '0644'
+    - name: Гарантия запуска службы nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
