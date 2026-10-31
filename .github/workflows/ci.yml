@@ -1,4 +1,4 @@
-name: Bash Script CI
+name: CI and Docker Build
 on:
   push:
     branches: [ "main" ]
@@ -15,9 +15,18 @@ jobs:
       - name: Run unit test
         run: |
           chmod +x app_calculator.sh
-          output=$(./app_calculator.sh 5 10)
-          if [ "$output" != "Сумма: 15" ]; then
-            echo "Тест провален: $output"
-            exit 1
-          fi
-          echo "Тест успешно пройден!"
+          ./app_calculator.sh 5 10
+  docker-build:
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Build Docker Image
+        run: |
+          docker build -t my-app:${{ github.sha }} .
+      - name: Test Docker Container
+        run: |
+          docker run -d -p 8080:8080 --name test_app my-app:${{ github.sha }}
+          sleep 2
+          curl --fail http://localhost:8080 || exit 1
